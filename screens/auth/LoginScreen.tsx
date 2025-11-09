@@ -1,8 +1,5 @@
-import { useAuth } from "@contexts/AuthContext";
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import {
-  Alert,
   Button,
   Pressable,
   StyleSheet,
@@ -11,74 +8,22 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Auth as AuthStrings, Common, AlertMessage } from "@constants/strings";
+import { Auth as AuthStrings } from "@constants/strings";
+import { useLogin } from "@hooks/use-login";
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isSignupMode, setIsSignupMode] = useState(false);
-  const { login, signup } = useAuth();
-  const router = useRouter();
-
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert(Common.ERROR, AlertMessage.EMAIL_PASSWORD_REQUIRED);
-      return;
-    }
-    try {
-      await login(email, password);
-      Alert.alert(Common.SUCCESS, AuthStrings.LOGIN_SUCCESS);
-      router.replace("/(tabs)/posts");
-    } catch (error: any) {
-      let errorMessage = AlertMessage.LOGIN_FAILED;
-      switch (error.code) {
-        case "auth/user-not-found":
-          errorMessage = AlertMessage.USER_NOT_FOUND;
-          break;
-        case "auth/wrong-password":
-          errorMessage = AlertMessage.WRONG_PASSWORD;
-          break;
-        case "auth/invalid-email":
-          errorMessage = AlertMessage.INVALID_EMAIL;
-          break;
-        case "auth/too-many-requests":
-          errorMessage = AlertMessage.TOO_MANY_REQUESTS;
-          break;
-      }
-      Alert.alert(Common.ERROR, errorMessage);
-    }
-  };
-
-  const handleSignup = async () => {
-    if (!email || !password || !confirmPassword) {
-      Alert.alert(Common.ERROR, AlertMessage.FILL_ALL_FIELDS);
-      return;
-    }
-    if (password !== confirmPassword) {
-      Alert.alert(Common.ERROR, AlertMessage.PASSWORD_MISMATCH);
-      return;
-    }
-    try {
-      await signup(email, password);
-      Alert.alert(Common.SUCCESS, AuthStrings.SIGNUP_SUCCESS);
-      router.replace("/(tabs)/posts");
-    } catch (error: any) {
-      let errorMessage = AlertMessage.SIGNUP_FAILED;
-      switch (error.code) {
-        case "auth/email-already-in-use":
-          errorMessage = AlertMessage.EMAIL_ALREADY_IN_USE;
-          break;
-        case "auth/weak-password":
-          errorMessage = AlertMessage.WEAK_PASSWORD;
-          break;
-        case "auth/invalid-email":
-          errorMessage = AlertMessage.INVALID_EMAIL;
-          break;
-      }
-      Alert.alert(Common.ERROR, errorMessage);
-    }
-  };
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    confirmPassword,
+    setConfirmPassword,
+    isSignupMode,
+    setIsSignupMode,
+    handleLogin,
+    handleSignup,
+  } = useLogin();
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -134,7 +79,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 16,
   },
-  label:{
+  label: {
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 8,
