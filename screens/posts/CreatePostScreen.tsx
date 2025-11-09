@@ -14,6 +14,12 @@ import {
   TextInput,
   View,
 } from "react-native";
+import {
+  Post as PostStrings,
+  AlertMessage,
+  Common,
+  Auth as AuthStrings,
+} from "@constants/strings";
 
 export default function CreatePostScreen() {
   const [title, setTitle] = useState("");
@@ -30,8 +36,8 @@ export default function CreatePostScreen() {
           await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== "granted") {
           Alert.alert(
-            "Photo Permission",
-            "Please turn on the camera permission."
+            AlertMessage.PHOTO_PERMISSION,
+            AlertMessage.PHOTO_PERMISSION_PROMPT
           );
         }
       }
@@ -53,11 +59,11 @@ export default function CreatePostScreen() {
 
   const handleCreatePost = async () => {
     if (!title.trim() || !content.trim()) {
-      Alert.alert("입력 오류", "제목과 내용을 모두 입력해주세요.");
+      Alert.alert(Common.ERROR, AlertMessage.TITLE_CONTENT_REQUIRED);
       return;
     }
     if (!user) {
-      Alert.alert("인증 오류", "로그인이 필요합니다.");
+      Alert.alert(Common.ERROR, AlertMessage.LOGIN_REQUIRED);
       return;
     }
 
@@ -69,11 +75,10 @@ export default function CreatePostScreen() {
         authorId: user.uid,
         authorEmail: user.email!,
       });
-      Alert.alert("성공", "게시물이 성공적으로 작성되었습니다.");
       router.back();
     } catch (error) {
       console.error("Failed to create post:", error);
-      Alert.alert("오류", "게시물 작성에 실패했습니다.");
+      Alert.alert(Common.ERROR, AlertMessage.POST_CREATION_FAILED);
     } finally {
       setLoading(false);
     }
@@ -81,26 +86,31 @@ export default function CreatePostScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>새 글 작성</Text>
+      <Text style={styles.title}>{PostStrings.CREATE_NEW_POST}</Text>
+      <Text style={styles.label}>{PostStrings.TITLE_PLACEHOLDER}</Text>
       <TextInput
         style={styles.input}
-        placeholder="제목"
+        placeholder={PostStrings.TITLE_PLACEHOLDER}
         value={title}
         onChangeText={setTitle}
       />
+      <Text style={styles.label}>{PostStrings.CONTENT_PLACEHOLDER}</Text>
       <TextInput
         style={[styles.input, styles.contentInput]}
-        placeholder="내용"
+        placeholder={PostStrings.CONTENT_PLACEHOLDER}
         value={content}
         onChangeText={setContent}
         multiline
       />
-      <Button title="사진 선택" onPress={_handlePhotoBtnPress} />
+      <Button title={PostStrings.SELECT_PHOTO} onPress={_handlePhotoBtnPress} />
       {image && <Image source={{ uri: image }} style={styles.image} />}
       {loading ? (
         <ActivityIndicator size="large" color="#007AFF" />
       ) : (
-        <Button title="작성 완료" onPress={handleCreatePost} />
+        <Button
+          title={PostStrings.CREATE_COMPLETE}
+          onPress={handleCreatePost}
+        />
       )}
     </View>
   );
@@ -117,6 +127,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 24,
     textAlign: "center",
+  },
+    label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 8,
   },
   input: {
     height: 40,

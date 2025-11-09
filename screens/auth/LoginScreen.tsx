@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Auth as AuthStrings, Common, AlertMessage } from "@constants/strings";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -22,77 +23,82 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("입력 오류", "이메일과 비밀번호를 모두 입력해주세요.");
+      Alert.alert(Common.ERROR, AlertMessage.EMAIL_PASSWORD_REQUIRED);
       return;
     }
     try {
       await login(email, password);
+      Alert.alert(Common.SUCCESS, AuthStrings.LOGIN_SUCCESS);
       router.replace("/(tabs)/posts");
     } catch (error: any) {
-      let errorMessage = "로그인에 실패했습니다. 다시 시도해주세요.";
+      let errorMessage = AlertMessage.LOGIN_FAILED;
       switch (error.code) {
         case "auth/user-not-found":
-          errorMessage = "등록되지 않은 이메일입니다.";
+          errorMessage = AlertMessage.USER_NOT_FOUND;
           break;
         case "auth/wrong-password":
-          errorMessage = "비밀번호가 틀렸습니다.";
+          errorMessage = AlertMessage.WRONG_PASSWORD;
           break;
         case "auth/invalid-email":
-          errorMessage = "유효하지 않은 이메일 형식입니다.";
+          errorMessage = AlertMessage.INVALID_EMAIL;
           break;
         case "auth/too-many-requests":
-          errorMessage =
-            "너무 많은 로그인 시도로 계정이 일시적으로 잠겼습니다.";
+          errorMessage = AlertMessage.TOO_MANY_REQUESTS;
           break;
       }
-      Alert.alert("로그인 실패", errorMessage);
+      Alert.alert(Common.ERROR, errorMessage);
     }
   };
 
   const handleSignup = async () => {
     if (!email || !password || !confirmPassword) {
-      Alert.alert("입력 오류", "모든 필드를 입력해주세요.");
+      Alert.alert(Common.ERROR, AlertMessage.FILL_ALL_FIELDS);
       return;
     }
     if (password !== confirmPassword) {
-      Alert.alert("비밀번호 불일치", "비밀번호가 일치하지 않습니다.");
+      Alert.alert(Common.ERROR, AlertMessage.PASSWORD_MISMATCH);
       return;
     }
     try {
       await signup(email, password);
+      Alert.alert(Common.SUCCESS, AuthStrings.SIGNUP_SUCCESS);
       router.replace("/(tabs)/posts");
     } catch (error: any) {
-      let errorMessage = "회원가입에 실패했습니다. 다시 시도해주세요.";
+      let errorMessage = AlertMessage.SIGNUP_FAILED;
       switch (error.code) {
         case "auth/email-already-in-use":
-          errorMessage = "이미 가입된 이메일입니다.";
+          errorMessage = AlertMessage.EMAIL_ALREADY_IN_USE;
           break;
         case "auth/weak-password":
-          errorMessage = "비밀번호는 6자 이상이어야 합니다.";
+          errorMessage = AlertMessage.WEAK_PASSWORD;
           break;
         case "auth/invalid-email":
-          errorMessage = "유효하지 않은 이메일 형식입니다.";
+          errorMessage = AlertMessage.INVALID_EMAIL;
           break;
       }
-      Alert.alert("회원가입 실패", errorMessage);
+      Alert.alert(Common.ERROR, errorMessage);
     }
   };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <Text style={styles.title}>{isSignupMode ? "회원가입" : "로그인"}</Text>
+        <Text style={styles.title}>
+          {isSignupMode ? AuthStrings.SIGNUP : AuthStrings.LOGIN}
+        </Text>
+        <Text style={styles.label}>{AuthStrings.EMAIL}</Text>
         <TextInput
           style={styles.input}
-          placeholder="이메일"
+          placeholder={AuthStrings.EMAIL}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
         />
+        <Text style={styles.label}>{AuthStrings.PASSWORD}</Text>
         <TextInput
           style={styles.input}
-          placeholder="비밀번호"
+          placeholder={AuthStrings.PASSWORD}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -100,21 +106,21 @@ export default function LoginScreen() {
         {isSignupMode && (
           <TextInput
             style={styles.input}
-            placeholder="비밀번호 확인"
+            placeholder={AuthStrings.CONFIRM_PASSWORD}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry
           />
         )}
         <Button
-          title={isSignupMode ? "회원가입" : "로그인"}
+          title={isSignupMode ? AuthStrings.SIGNUP : AuthStrings.LOGIN}
           onPress={isSignupMode ? handleSignup : handleLogin}
         />
         <Pressable onPress={() => setIsSignupMode(!isSignupMode)}>
           <Text style={styles.link}>
             {isSignupMode
-              ? "이미 계정이 있으신가요? 로그인"
-              : "계정이 없으신가요? 회원가입"}
+              ? AuthStrings.LOGIN_PROMPT
+              : AuthStrings.SIGNUP_PROMPT}
           </Text>
         </Pressable>
       </View>
@@ -127,6 +133,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 16,
+  },
+  label:{
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 8,
   },
   title: {
     fontSize: 24,

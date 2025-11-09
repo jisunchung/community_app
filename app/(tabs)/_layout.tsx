@@ -5,6 +5,7 @@ import React from "react";
 import { ActivityIndicator, View } from "react-native";
 
 import { HapticTab } from "@components/haptic-tab";
+import { Tabs as TabsStrings } from "@constants/strings";
 
 export default function TabLayout() {
   const { user, loading } = useAuth();
@@ -32,7 +33,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="posts"
         options={{
-          title: "Posts",
+          title: TabsStrings.POSTS,
           tabBarIcon: ({ color }) => (
             <Ionicons name="document-text" size={28} color={color} />
           ),
@@ -41,7 +42,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
+          title: TabsStrings.PROFILE,
           tabBarIcon: ({ color }) => (
             <Ionicons name="person" size={28} color={color} />
           ),

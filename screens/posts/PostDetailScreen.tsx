@@ -18,6 +18,12 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  Post as PostStrings,
+  Comment as CommentStrings,
+  CommonError,
+  Common,
+} from "@constants/strings";
 
 export default function PostDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -38,7 +44,7 @@ export default function PostDetailScreen() {
       setComments(fetchedComments);
     } catch (error) {
       console.error("Failed to fetch post and comments:", error);
-      Alert.alert("오류", "데이터를 불러오는 데 실패했습니다.");
+      Alert.alert(CommonError.ERROR, CommonError.FETCH_FAILED);
     } finally {
       setLoading(false);
     }
@@ -51,19 +57,19 @@ export default function PostDetailScreen() {
   const handleDelete = () => {
     if (!id) return;
 
-    Alert.alert("게시물 삭제", "정말로 이 게시물을 삭제하시겠습니까?", [
-      { text: "취소", style: "cancel" },
+    Alert.alert(Common.DELETE, PostStrings.DELETE_POST_CONFIRM, [
+      { text: Common.CANCEL, style: "cancel" },
       {
-        text: "삭제",
+        text: Common.DELETE,
         style: "destructive",
         onPress: async () => {
           try {
             await deletePost(id);
-            Alert.alert("성공", "게시물이 삭제되었습니다.");
+
             router.back();
           } catch (error) {
             console.error("Failed to delete post:", error);
-            Alert.alert("오류", "게시물 삭제에 실패했습니다.");
+            Alert.alert(CommonError.ERROR);
           }
         },
       },
@@ -71,27 +77,34 @@ export default function PostDetailScreen() {
   };
 
   const handleDeleteComment = (commentId: string) => {
-    Alert.alert("댓글 삭제", "정말로 이 댓글을 삭제하시겠습니까?", [
-      { text: "취소", style: "cancel" },
-      {
-        text: "삭제",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await deleteComment(commentId);
-            fetchPostAndComments();
-          } catch (error) {
-            console.error("Failed to delete comment:", error);
-            Alert.alert("오류", "댓글 삭제에 실패했습니다.");
-          }
+    Alert.alert(
+      CommentStrings.DELETE_COMMENT_TITLE,
+      CommentStrings.DELETE_COMMENT_CONFIRM,
+      [
+        { text: Common.CANCEL, style: "cancel" },
+        {
+          text: Common.DELETE,
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteComment(commentId);
+              fetchPostAndComments();
+            } catch (error) {
+              console.error("Failed to delete comment:", error);
+              Alert.alert(
+                CommonError.ERROR,
+                CommentStrings.DELETE_FAILED_MESSAGE
+              );
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const handleAddComment = async () => {
     if (!id || !commentText.trim() || !user) {
-      Alert.alert("입력 오류", "댓글 내용을 입력해주세요.");
+      Alert.alert(CommonError.INPUT_ERROR, CommentStrings.COMMENT_REQUIRED);
       return;
     }
 
@@ -106,7 +119,7 @@ export default function PostDetailScreen() {
       fetchPostAndComments();
     } catch (error) {
       console.error("Failed to add comment:", error);
-      Alert.alert("오류", "댓글 작성에 실패했습니다.");
+      Alert.alert(CommonError.ERROR, CommentStrings.CREATE_FAILED_MESSAGE);
     }
   };
 
@@ -121,7 +134,7 @@ export default function PostDetailScreen() {
   if (!post) {
     return (
       <View style={styles.centerContainer}>
-        <Text>게시물을 찾을 수 없습니다.</Text>
+        <Text>{PostStrings.POST_NOT_FOUND}</Text>
       </View>
     );
   }
@@ -134,7 +147,7 @@ export default function PostDetailScreen() {
           <Text style={styles.commentAuthor}>{item.authorEmail}</Text>
           {isCommentAuthor && (
             <Button
-              title="삭제"
+              title={Common.DELETE}
               color="red"
               onPress={() => handleDeleteComment(item.id)}
             />
@@ -173,27 +186,36 @@ export default function PostDetailScreen() {
               <Text style={styles.content}>{post.content}</Text>
               {user?.uid === post.authorId && (
                 <View style={styles.buttonContainer}>
-                  <Button title="삭제" color="red" onPress={handleDelete} />
+                  <Button
+                    title={Common.DELETE}
+                    color="red"
+                    onPress={handleDelete}
+                  />
                 </View>
               )}
               <View style={styles.separator} />
-              <Text style={styles.commentsTitle}>댓글</Text>
+              <Text style={styles.commentsTitle}>
+                {CommentStrings.COMMENTS_TITLE}
+              </Text>
             </View>
           }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Text>아직 댓글이 없습니다.</Text>
+              <Text>{CommentStrings.NO_COMMENTS}</Text>
             </View>
           }
         />
         <View style={styles.commentInputContainer}>
           <TextInput
             style={styles.commentInput}
-            placeholder="댓글을 입력하세요..."
+            placeholder={CommentStrings.COMMENT_INPUT_PLACEHOLDER}
             value={commentText}
             onChangeText={setCommentText}
           />
-          <Button title="작성" onPress={handleAddComment} />
+          <Button
+            title={CommentStrings.ADD_COMMENT}
+            onPress={handleAddComment}
+          />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

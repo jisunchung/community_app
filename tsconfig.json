@@ -10,7 +10,8 @@
       "@hooks/*": ["./hooks/*"],
       "@services/*": ["./services/*"],
       "@contexts/*": ["./contexts/*"],
-      "@types/*": ["./types/*"]
+      "@types/*": ["./types/*"],
+      "@constants/*": ["./constants/*"]
     },
     "typeRoots": ["./src/types", "./node_modules/@types"]
   },

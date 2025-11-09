@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Post as PostStrings, Tabs } from "@constants/strings";
 
 export default function PostsListScreen() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -59,10 +60,12 @@ export default function PostsListScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <Text style={styles.title}>게시판</Text>
+        <Text style={styles.title}>{Tabs.POSTS}</Text>
         <Link href="/post/create" asChild>
           <TouchableOpacity style={styles.createButton}>
-            <Text style={styles.createButtonText}>새 글 작성</Text>
+            <Text style={styles.createButtonText}>
+              {PostStrings.CREATE_NEW_POST}
+            </Text>
           </TouchableOpacity>
         </Link>
       </View>
@@ -74,7 +77,7 @@ export default function PostsListScreen() {
           contentContainerStyle={styles.listContainer}
           ListEmptyComponent={
             <View style={styles.centerContainer}>
-              <Text>게시물이 없습니다.</Text>
+              <Text>{PostStrings.NO_POSTS}</Text>
             </View>
           }
         />

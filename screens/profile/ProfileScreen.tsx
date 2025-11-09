@@ -13,6 +13,13 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  Profile as ProfileStrings,
+  Auth as AuthStrings,
+  CommonError,
+  Common,
+Tabs
+} from "@constants/strings";
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
@@ -29,7 +36,7 @@ export default function ProfileScreen() {
             setPosts(userPosts);
           } catch (error) {
             console.error("Failed to fetch user posts:", error);
-            Alert.alert("오류", "게시글을 불러오는 데 실패했습니다.");
+            Alert.alert(CommonError.ERROR, CommonError.FETCH_FAILED);
           } finally {
             setLoading(false);
           }
@@ -45,7 +52,7 @@ export default function ProfileScreen() {
       await logout();
       router.replace("/(auth)/login");
     } catch (error: any) {
-      Alert.alert("Logout Failed", error.message);
+      Alert.alert(AuthStrings.LOGOUT_FAILED_TITLE, error.message);
     }
   };
 
@@ -65,20 +72,20 @@ export default function ProfileScreen() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.profileSection}>
-          <Text style={styles.title}>Profile</Text>
+          <Text style={styles.title}>{Tabs.PROFILE}</Text>
           {user && <Text style={styles.email}>{user.email}</Text>}
-          <Button title="로그아웃" onPress={handleLogout} />
+          <Button title={AuthStrings.LOGOUT} onPress={handleLogout} />
         </View>
-        <Text style={styles.myPostsTitle}>내 게시글</Text>
+        <Text style={styles.myPostsTitle}>{ProfileStrings.MY_POSTS}</Text>
         {loading ? (
-          <Text>Loading...</Text>
+          <Text>{Common.LOADING}</Text>
         ) : (
           <FlatList
             data={posts}
             renderItem={renderPost}
             keyExtractor={(item) => item.id}
             style={styles.postsList}
-            ListEmptyComponent={<Text>작성한 게시글이 없습니다.</Text>}
+            ListEmptyComponent={<Text>{ProfileStrings.NO_POSTS_WRITTEN}</Text>}
           />
         )}
       </View>
