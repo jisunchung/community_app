@@ -1,11 +1,6 @@
 import { useAuth } from "@contexts/AuthContext";
-import {
-  addComment,
-  deleteComment,
-  deletePost,
-  getComments,
-  getPostById,
-} from "@services/posts";
+import { addComment, deleteComment, getComments } from "@services/comments";
+import { deletePost, getPostById } from "@services/posts";
 import { Comment } from "@types/Comment";
 import { Post } from "@types/Post";
 import { useLocalSearchParams, useRouter } from "expo-router";
