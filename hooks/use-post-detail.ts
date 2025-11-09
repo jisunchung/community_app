@@ -66,6 +66,7 @@ export function usePostDetail(id: string | undefined) {
     try {
       await deleteComment(commentId);
       fetchPostAndComments();
+    } catch (error) {
       console.error("Failed to delete comment:", error);
       Alert.alert(CommonError.ERROR, CommentStrings.DELETE_FAILED_MESSAGE);
     }
@@ -85,7 +86,7 @@ export function usePostDetail(id: string | undefined) {
         authorEmail: user.email!,
       });
       setCommentText("");
-      fetchPostAndComments(); 
+      fetchPostAndComments();
     } catch (error) {
       console.error("Failed to add comment:", error);
       Alert.alert(CommonError.ERROR, CommentStrings.CREATE_FAILED_MESSAGE);
