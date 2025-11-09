@@ -1,11 +1,14 @@
 import { useAuth } from "@contexts/AuthContext";
 import { createPost } from "@services/posts";
+import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   Button,
+  Image,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -15,9 +18,38 @@ import {
 export default function CreatePostScreen() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== "web") {
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+          Alert.alert(
+            "Photo Permission",
+            "Please turn on the camera permission."
+          );
+        }
+      }
+    })();
+  }, []);
+
+  const _handlePhotoBtnPress = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images", "videos"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+    console.log(result);
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
   const handleCreatePost = async () => {
     if (!title.trim() || !content.trim()) {
@@ -63,6 +95,8 @@ export default function CreatePostScreen() {
         onChangeText={setContent}
         multiline
       />
+      <Button title="사진 선택" onPress={_handlePhotoBtnPress} />
+      {image && <Image source={{ uri: image }} style={styles.image} />}
       {loading ? (
         <ActivityIndicator size="large" color="#007AFF" />
       ) : (
@@ -95,5 +129,11 @@ const styles = StyleSheet.create({
   contentInput: {
     height: 150,
     paddingTop: 12,
+  },
+  image: {
+    width: "100%",
+    height: 200,
+    borderRadius: 8,
+    marginVertical: 16,
   },
 });
