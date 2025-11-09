@@ -1,8 +1,10 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { auth } from "../../services/firebaseApp";
 
 export default function LoginScreen() {
+  console.log("auth in LoginScreen:", auth);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>

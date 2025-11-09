@@ -8,7 +8,8 @@
       "@components/*": ["./components/*"],
       "@screens/*": ["./screens/*"],
       "@hooks/*": ["./hooks/*"]
-    }
+    },
+    "typeRoots": ["./src/types", "./node_modules/@types"]
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }
