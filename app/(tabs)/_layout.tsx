@@ -14,15 +14,6 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="login"
-        options={{
-          title: "로그인",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="log-in" size={28} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="posts"
         options={{
           title: "Posts",
