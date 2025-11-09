@@ -134,8 +134,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   centerContainer: {
-    flex: 1,
-    justifyContent: "center",
+    marginTop: 50,
     alignItems: "center",
   },
 });
