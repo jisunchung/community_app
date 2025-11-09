@@ -25,6 +25,18 @@ export const getPosts = async (): Promise<Post[]> => {
   );
 };
 
+export const getPostsByAuthor = async (authorId: string): Promise<Post[]> => {
+  const q = query(
+    postsCollection,
+    where("authorId", "==", authorId),
+    orderBy("createdAt", "desc")
+  );
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(
+    (doc) => ({ id: doc.id, ...doc.data() } as Post)
+  );
+};
+
 export const getPostById = async (postId: string): Promise<Post | null> => {
   const postDocRef = doc(db, "posts", postId);
   const postSnap = await getDoc(postDocRef);
