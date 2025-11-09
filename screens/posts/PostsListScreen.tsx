@@ -1,7 +1,6 @@
-import { getPosts } from "@services/posts";
 import { Post } from "@types/Post";
-import { Link, useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useState } from "react";
+import { Link, useRouter } from "expo-router";
+import React from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -12,29 +11,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Post as PostStrings, Tabs } from "@constants/strings";
+import { usePostsList } from "@hooks/use-post-list";
 
 export default function PostsListScreen() {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
-
-  useFocusEffect(
-    useCallback(() => {
-      const fetchPosts = async () => {
-        try {
-          setLoading(true);
-          const fetchedPosts = await getPosts();
-          setPosts(fetchedPosts);
-        } catch (error) {
-          console.error("Failed to fetch posts:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchPosts();
-    }, [])
-  );
+  const { posts, loading } = usePostsList();
 
   const renderItem = ({ item }: { item: Post }) => (
     <TouchableOpacity
