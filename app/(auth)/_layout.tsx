@@ -1,7 +1,7 @@
+import { useAuth } from "@contexts/AuthContext";
 import { Redirect, Stack } from "expo-router";
 import React from "react";
 import { ActivityIndicator, View } from "react-native";
-import { useAuth } from "../../contexts/AuthContext";
 
 export default function AuthLayout() {
   const { user, loading } = useAuth();
@@ -25,7 +25,6 @@ export default function AuthLayout() {
       }}
     >
       <Stack.Screen name="login" />
-      <Stack.Screen name="signup" />
     </Stack>
   );
 }
