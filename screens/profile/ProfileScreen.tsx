@@ -1,10 +1,7 @@
-import { useAuth } from "@contexts/AuthContext";
-import { getPostsByAuthor } from "@services/posts";
 import { Post } from "@types/Post";
-import { router, useFocusEffect } from "expo-router";
-import React, { useCallback, useState } from "react";
+import { router } from "expo-router";
+import React from "react";
 import {
-  Alert,
   Button,
   FlatList,
   StyleSheet,
@@ -16,45 +13,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Profile as ProfileStrings,
   Auth as AuthStrings,
-  CommonError,
   Common,
-Tabs
+  Tabs,
 } from "@constants/strings";
+import { useProfile } from "@hooks/use-profile";
+import { useLogin } from "@hooks/use-login";
 
 export default function ProfileScreen() {
-  const { user, logout } = useAuth();
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useFocusEffect(
-    useCallback(() => {
-      const fetchUserPosts = async () => {
-        if (user) {
-          try {
-            setLoading(true);
-            const userPosts = await getPostsByAuthor(user.uid);
-            setPosts(userPosts);
-          } catch (error) {
-            console.error("Failed to fetch user posts:", error);
-            Alert.alert(CommonError.ERROR, CommonError.FETCH_FAILED);
-          } finally {
-            setLoading(false);
-          }
-        }
-      };
-
-      fetchUserPosts();
-    }, [user])
-  );
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      router.replace("/(auth)/login");
-    } catch (error: any) {
-      Alert.alert(AuthStrings.LOGOUT_FAILED_TITLE, error.message);
-    }
-  };
+  const { user, posts, loading } = useProfile();
+  const { handleLogout } = useLogin();
 
   const renderPost = ({ item }: { item: Post }) => (
     <TouchableOpacity

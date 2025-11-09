@@ -9,7 +9,7 @@ export const useLogin = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSignupMode, setIsSignupMode] = useState(false);
-  const { login, signup } = useAuth();
+  const { login, signup, logout } = useAuth();
   const router = useRouter();
 
   const handleLogin = async () => {
@@ -41,6 +41,7 @@ export const useLogin = () => {
     }
   };
 
+
   const handleSignup = async () => {
     if (!email || !password || !confirmPassword) {
       Alert.alert(Common.ERROR, AlertMessage.FILL_ALL_FIELDS);
@@ -70,6 +71,14 @@ export const useLogin = () => {
       Alert.alert(Common.ERROR, errorMessage);
     }
   };
+ const handleLogout = async () => {
+    try {
+      await logout();
+      router.replace("/(auth)/login");
+    } catch (error: any) {
+      Alert.alert(AuthStrings.LOGOUT_FAILED_TITLE, error.message);
+    }
+  };
 
   return {
     email,
@@ -82,5 +91,6 @@ export const useLogin = () => {
     setIsSignupMode,
     handleLogin,
     handleSignup,
+    handleLogout
   };
 };
