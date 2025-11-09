@@ -1,8 +1,8 @@
 import { useAuth } from "@contexts/AuthContext";
 import { getPostsByAuthor } from "@services/posts";
 import { Post } from "@types/Post";
-import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import React, { useCallback, useState } from "react";
 import {
   Alert,
   Button,
@@ -19,23 +19,26 @@ export default function ProfileScreen() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      const fetchPosts = async () => {
-        try {
-          setLoading(true);
-          const userPosts = await getPostsByAuthor(user.uid);
-          setPosts(userPosts);
-        } catch (error) {
-          console.error("Failed to fetch user posts:", error);
-          Alert.alert("오류", "게시물을 불러오는 데 실패했습니다.");
-        } finally {
-          setLoading(false);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchUserPosts = async () => {
+        if (user) {
+          try {
+            setLoading(true);
+            const userPosts = await getPostsByAuthor(user.uid);
+            setPosts(userPosts);
+          } catch (error) {
+            console.error("Failed to fetch user posts:", error);
+            Alert.alert("오류", "게시글을 불러오는 데 실패했습니다.");
+          } finally {
+            setLoading(false);
+          }
         }
       };
-      fetchPosts();
-    }
-  }, [user]);
+
+      fetchUserPosts();
+    }, [user])
+  );
 
   const handleLogout = async () => {
     try {
