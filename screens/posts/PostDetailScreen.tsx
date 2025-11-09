@@ -1,4 +1,13 @@
 import { useAuth } from "@contexts/AuthContext";
+import {
+  addComment,
+  deleteComment,
+  deletePost,
+  getComments,
+  getPostById,
+} from "@services/posts";
+import { Comment } from "@types/Comment";
+import { Post } from "@types/Post";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -6,20 +15,14 @@ import {
   Alert,
   Button,
   FlatList,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
-import {
-  addComment,
-  deleteComment,
-  deletePost,
-  getComments,
-  getPostById,
-} from "services/posts";
-import { Comment } from "types/Comment";
-import { Post } from "types/Post";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PostDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -72,6 +75,25 @@ export default function PostDetailScreen() {
     ]);
   };
 
+  const handleDeleteComment = (commentId: string) => {
+    Alert.alert("댓글 삭제", "정말로 이 댓글을 삭제하시겠습니까?", [
+      { text: "취소", style: "cancel" },
+      {
+        text: "삭제",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await deleteComment(commentId);
+            fetchPostAndComments();
+          } catch (error) {
+            console.error("Failed to delete comment:", error);
+            Alert.alert("오류", "댓글 삭제에 실패했습니다.");
+          }
+        },
+      },
+    ]);
+  };
+
   const handleAddComment = async () => {
     if (!id || !commentText.trim() || !user) {
       Alert.alert("입력 오류", "댓글 내용을 입력해주세요.");
@@ -92,24 +114,7 @@ export default function PostDetailScreen() {
       Alert.alert("오류", "댓글 작성에 실패했습니다.");
     }
   };
-  const handleDeleteComment = (commentId: string) => {
-    Alert.alert("댓글 삭제", "정말로 이 댓글을 삭제하시겠습니까?", [
-      { text: "취소", style: "cancel" },
-      {
-        text: "삭제",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await deleteComment(commentId);
-            fetchPostAndComments();
-          } catch (error) {
-            console.error("Failed to delete comment:", error);
-            Alert.alert("오류", "댓글 삭제에 실패했습니다.");
-          }
-        },
-      },
-    ]);
-  };
+
   if (loading) {
     return (
       <View style={styles.centerContainer}>
@@ -125,8 +130,6 @@ export default function PostDetailScreen() {
       </View>
     );
   }
-
-  const isAuthor = user?.uid === post.authorId;
 
   const renderComment = ({ item }: { item: Comment }) => {
     const isCommentAuthor = user?.uid === item.authorId;
@@ -151,32 +154,43 @@ export default function PostDetailScreen() {
   };
 
   return (
-    <FlatList
-      style={styles.container}
-      data={comments}
-      renderItem={renderComment}
-      keyExtractor={(item) => item.id}
-      ListHeaderComponent={
-        <>
-          <Text style={styles.title}>{post.title}</Text>
-          <View style={styles.metaContainer}>
-            <Text style={styles.author}>{post.authorEmail}</Text>
-            <Text style={styles.date}>
-              {new Date(post.createdAt.seconds * 1000).toLocaleString()}
-            </Text>
-          </View>
-
-          <Text style={styles.content}>{post.content}</Text>
-          {isAuthor && (
-            <View style={styles.buttonContainer}>
-              <Button title="삭제" color="red" onPress={handleDelete} />
+    <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+      >
+        <FlatList
+          data={comments}
+          renderItem={renderComment}
+          keyExtractor={(item) => item.id}
+          style={styles.commentsList}
+          contentContainerStyle={styles.commentsContentContainer}
+          ListHeaderComponent={
+            <View>
+              <Text style={styles.title}>{post.title}</Text>
+              <View style={styles.metaContainer}>
+                <Text style={styles.author}>{post.authorEmail}</Text>
+                <Text style={styles.date}>
+                  {new Date(post.createdAt.seconds * 1000).toLocaleString()}
+                </Text>
+              </View>
+              <Text style={styles.content}>{post.content}</Text>
+              {user?.uid === post.authorId && (
+                <View style={styles.buttonContainer}>
+                  <Button title="삭제" color="red" onPress={handleDelete} />
+                </View>
+              )}
+              <View style={styles.separator} />
+              <Text style={styles.commentsTitle}>댓글</Text>
             </View>
-          )}
-          <View style={styles.separator} />
-          <Text style={styles.commentsTitle}>댓글</Text>
-        </>
-      }
-      ListFooterComponent={
+          }
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text>아직 댓글이 없습니다.</Text>
+            </View>
+          }
+        />
         <View style={styles.commentInputContainer}>
           <TextInput
             style={styles.commentInput}
@@ -186,27 +200,35 @@ export default function PostDetailScreen() {
           />
           <Button title="작성" onPress={handleAddComment} />
         </View>
-      }
-    />
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  container: {
+    flex: 1,
+  },
   centerContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  container: {
+  commentsList: {
     flex: 1,
-    backgroundColor: "#fff",
+  },
+  commentsContentContainer: {
     paddingHorizontal: 8,
-    paddingTop: 16,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 16,
+    paddingTop: 16,
   },
   metaContainer: {
     flexDirection: "row",
@@ -242,16 +264,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#eee",
     marginVertical: 24,
   },
-
-  commentHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 4,
-  },
-  commentAuthor: {
-    fontWeight: "bold",
-  },
   commentsTitle: {
     fontSize: 20,
     fontWeight: "bold",
@@ -262,6 +274,15 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     marginBottom: 8,
+  },
+  commentHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  commentAuthor: {
+    fontWeight: "bold",
   },
   commentDate: {
     fontSize: 12,
@@ -274,6 +295,7 @@ const styles = StyleSheet.create({
     padding: 8,
     borderTopWidth: 1,
     borderTopColor: "#eee",
+    backgroundColor: "#fff",
   },
   commentInput: {
     flex: 1,
@@ -283,5 +305,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     marginRight: 8,
+  },
+  emptyContainer: {
+    alignItems: "center",
+    marginTop: 20,
   },
 });
