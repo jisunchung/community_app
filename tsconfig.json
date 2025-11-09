@@ -9,7 +9,8 @@
       "@screens/*": ["./screens/*"],
       "@hooks/*": ["./hooks/*"],
       "@services/*": ["./services/*"],
-      "@contexts/*": ["./contexts/*"]
+      "@contexts/*": ["./contexts/*"],
+      "@types/*": ["./types/*"]
     },
     "typeRoots": ["./src/types", "./node_modules/@types"]
   },
