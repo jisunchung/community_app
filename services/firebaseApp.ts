@@ -8,8 +8,9 @@ import {
   REACT_APP_FIREBASE_STORAGE_BUCKET,
 } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getApp, getApps, initializeApp } from "firebase/app";
+import { FirebaseApp, getApp, getApps, initializeApp } from "firebase/app";
 import {
+  Auth,
   getAuth,
   getReactNativePersistence,
   initializeAuth,
@@ -27,17 +28,18 @@ const firebaseConfig = {
   measurementId: REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
-let app;
-let auth;
+let app: FirebaseApp;
+let auth: Auth;
 
 if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-
   try {
+    app = initializeApp(firebaseConfig);
     auth = initializeAuth(app, {
       persistence: getReactNativePersistence(AsyncStorage),
     });
-  } catch {
+  } catch (error) {
+    console.error("Firebase initialization error:", error);
+    app = getApp();
     auth = getAuth(app);
   }
 } else {

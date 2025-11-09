@@ -7,7 +7,9 @@
       "@/*": ["./*"],
       "@components/*": ["./components/*"],
       "@screens/*": ["./screens/*"],
-      "@hooks/*": ["./hooks/*"]
+      "@hooks/*": ["./hooks/*"],
+      "@services/*": ["./services/*"],
+      "@contexts/*": ["./contexts/*"]
     },
     "typeRoots": ["./src/types", "./node_modules/@types"]
   },
