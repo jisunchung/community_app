@@ -1,6 +1,46 @@
-# Welcome to your Expo app 👋
+# 커뮤니티 앱 MVP
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> React Native + Expo를 기반으로 한 간단한 커뮤니티 앱 개발 프로젝트
+
+## 프로젝트 개요
+
+회원가입/로그인, 글 작성/조회, 이미지 첨부, 댓글 기능을 포함한 커뮤니티 앱 MVP입니다.
+
+### 주요 기능
+
+- **회원가입/로그인** - Firebase Auth 기반 사용자 인증
+- **글 관리** - 목록 조회, 상세보기, 작성, 수정, 삭제
+- **이미지 첨부** - 사진 선택
+- **댓글 시스템** - 실시간 댓글 작성 및 조회
+
+## 기술 스택
+
+### Frontend
+
+- **React Native**
+- **Expo Router**
+- **TypeScript**
+
+### 백엔드 / 서비스
+
+- **Firebase Authentication**
+- **Firestore**
+- **Expo ImagePicker**
+
+## 프로젝트 구조
+
+```
+.
+├── app/              # Expo Router 기반의 라우팅 및 화면 구성
+│   ├── (auth)/       # 인증 관련 화면 (로그인, 회원가입)
+│   ├── (tabs)/       # 탭 네비게이션 화면 (게시글 목록, 프로필)
+│   └── post/         # 게시글 상세 및 생성 화면
+├── assets/           # 이미지, 폰트 등 정적 에셋
+├── components/       # 재사용 가능한 UI 컴포넌트
+├── contexts/         # 전역 상태 관리를 위한 Context (예: AuthContext)
+├── services/         # Firebase 등 외부 서비스와 통신하는 로직
+└── types/            # TypeScript 타입 정의 (Post, Comment 등)
+```
 
 ## Get started
 
@@ -15,36 +55,3 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    ```bash
    npx expo start
    ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
